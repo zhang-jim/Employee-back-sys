@@ -26,15 +26,16 @@ if (isset($_SESSION['account'])) {
 }
 // 登入流程判斷
 if (!empty($_POST['account']) && !empty($_POST['password'])) {
-    $file_array = file('user.txt');
-    foreach ($file_array as $value) {
-        list($account, $hash) = explode("|", string: trim($value));
-        if ($_POST['account'] === $account && password_verify($_POST['password'], $hash)) {
-                echo "登入成功";
-                $_SESSION['account'] = $_POST['account'];
-                header("Location:../");
-                exit();
-        }
+    include_once "../database/db.php";
+    $account = $_POST['account'];
+    $password = $_POST['password'];
+    $stmt = $pdo->prepare("SELECT * FROM users WHERE account = ?");
+    $stmt->execute([$account]);
+    $user = $stmt->fetch(PDO::FETCH_ASSOC);
+    if ($user && password_verify($password, $user['password'])) {
+        $_SESSION['account'] = $_POST['account'];
+        header("Location:../");
+        exit();
     }
     echo "帳號或密碼錯誤！";
 }

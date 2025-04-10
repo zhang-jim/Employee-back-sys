@@ -29,16 +29,10 @@
     ?>
     <!-- 顯示所有留言 -->
     <?php
-    $file_path = './messageboard.txt';
-    if (filesize($file_path) > 0) {
-        $message_array = array_reverse(file($file_path));
-        echo "<ul>";
-        foreach ($message_array as $value) {
-            echo "<li>" . htmlspecialchars($value) . "</li>";
-        }
-        echo "</ul>";
-    } else {
-        echo "目前沒有任何留言！";
+    include_once 'database/db.php';
+    $stmt = $pdo->query("SELECT messages.content,messages.created_at,users.account FROM messages JOIN users ON messages.user_id = users.id");
+    while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+        echo "<li>[" . $row['created_at'] . "] " . $row['account'] . "：" . $row['content'] . "</li>";
     }
     ?>
 </body>
