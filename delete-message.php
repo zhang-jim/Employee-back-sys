@@ -24,6 +24,6 @@ if ($_SESSION['user_id'] !== $message['user_id']) {
 
 #執行刪除
 $messageModel = new Message($pdo);
-$messageModel->deleteMessage($messageID);
+$messageModel->delete($messageID);
 header("Location:./");
 exit();

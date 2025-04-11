@@ -18,6 +18,6 @@ if ($_POST['new-message'] === $message['content']) {
     exit();
 }
 $messageModel = new Message($pdo);
-$messageModel->updateMessage($messageID, $newMessage);
+$messageModel->update($messageID, $newMessage);
 header("Location:index.php");
 exit();

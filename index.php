@@ -26,7 +26,7 @@
     }
     // 顯示所有留言
     $messageModel = new Message($pdo);
-    $data = $messageModel->getAllMessages();
+    $data = $messageModel->getAll();
 
     foreach ($data as $key => $value) {
         echo "<li>[" . $value['created_at'] . "] " .

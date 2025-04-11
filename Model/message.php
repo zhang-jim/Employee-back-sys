@@ -7,7 +7,7 @@ class Message
         $this->pdo = $pdo;
     }
     // 查詢所有留言
-    public function getAllMessages()
+    public function getAll()
     {
         $stmt = $this->pdo->query("SELECT messages.id,messages.content,messages.created_at,users.account FROM messages JOIN users ON messages.user_id = users.id ORDER BY created_at DESC");
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -19,19 +19,19 @@ class Message
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
     // 新增留言
-    public function createMessage($userID, $message)
+    public function create($userID, $message)
     {
         $stmt = $this->pdo->prepare("INSERT INTO messages (user_id,content) VALUE (?,?)");
         $stmt->execute([$userID, $message]);
     }
     //編輯留言
-    public function updateMessage($messageID, $newMessage)
+    public function update($messageID, $newMessage)
     {
         $stmt = $this->pdo->prepare("UPDATE messages SET content = ? WHERE id = ?");
         $stmt->execute([$newMessage, $messageID]);
     }
     //刪除留言
-    public function deleteMessage($messageID)
+    public function delete($messageID)
     {
         $stmt = $this->pdo->prepare("DELETE FROM messages WHERE id = ?");
         $stmt->execute([$messageID]);
