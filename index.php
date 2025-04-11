@@ -11,6 +11,8 @@
     <h1>留言板</h1>
     <?php
     session_start();
+    include_once 'database/db.php';
+    include_once 'Model/message.php';
     #判斷並顯示已登入的使用者 
     if (isset($_SESSION['account'])) {
         echo "使用者：" . $_SESSION['account'] . "<a href='Auth/logout.php'>登出</a>";
@@ -22,28 +24,24 @@
     } else {
         echo "<a href='Auth/login.php'>登入</a>";
     }
-    ?>
-    <!-- 顯示所有留言 -->
-    <?php
-    include_once 'database/db.php';
-    $stmt = $pdo->query("SELECT messages.id,messages.content,messages.created_at,users.account FROM messages JOIN users ON messages.user_id = users.id ORDER BY created_at DESC");
-    while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-        echo "<li>[" . $row['created_at'] . "] " . 
-        htmlspecialchars($row['account']) . "：" . 
-        htmlspecialchars($row['content']);
-        // 
-        if(isset($_SESSION['user_id']) && $_SESSION['account'] == $row['account']){
-            echo "<a href='edit-message.php?message_id=" . $row['id'] . "'>編輯</a>";
+    // 顯示所有留言
+    $messageModel = new Message($pdo);
+    $data = $messageModel->getAllMessages();
+
+    foreach ($data as $key => $value) {
+        echo "<li>[" . $value['created_at'] . "] " .
+            htmlspecialchars($value['account']) . "：" .
+            htmlspecialchars($value['content']);
+        if (isset($_SESSION['user_id']) && $_SESSION['account'] == $value['account']) {
+            echo "<a href='edit-message.php?message_id=" . $value['id'] . "'>編輯</a>";
             echo '
             <form action="delete-message.php" method="post">
-                <input type="hidden" name="message_id" value="'.$row['id'].'">
+                <input type="hidden" name="message_id" value="' . $value['id'] . '">
                 <input type="submit" value="刪除">
             </form>';
         }
         echo "</li>";
     }
-
-
     ?>
 </body>
 

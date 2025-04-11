@@ -1,6 +1,7 @@
 <?php
 session_start();
 include_once 'database/db.php';
+include_once 'Model/message.php';
 #判斷是否登入
 if (!isset($_SESSION['user_id'])) {
     exit();
@@ -10,10 +11,8 @@ if (!isset($_POST['message_id'])) {
     exit();
 }
 $messageID = $_POST['message_id'];
-#判斷使用者與留言者ID是否相符
-$stmt = $pdo->prepare("SELECT * FROM messages WHERE id = ?");
-$stmt->execute([$messageID]);
-$message = $stmt->fetch(PDO::FETCH_ASSOC);
+$messageModel = new Message($pdo);
+$message = $messageModel->getMessage($messageID);
 #判斷是否有資料
 if (!$message) {
     exit();
@@ -24,7 +23,7 @@ if ($_SESSION['user_id'] !== $message['user_id']) {
 }
 
 #執行刪除
-$stmt = $pdo->prepare("DELETE FROM messages WHERE id = ?");
-$stmt->execute([$messageID]);
+$messageModel = new Message($pdo);
+$messageModel->deleteMessage($messageID);
 header("Location:./");
 exit();
