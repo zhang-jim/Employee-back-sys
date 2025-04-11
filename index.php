@@ -30,9 +30,9 @@
     <!-- 顯示所有留言 -->
     <?php
     include_once 'database/db.php';
-    $stmt = $pdo->query("SELECT messages.content,messages.created_at,users.account FROM messages JOIN users ON messages.user_id = users.id");
+    $stmt = $pdo->query("SELECT messages.content,messages.created_at,users.account FROM messages JOIN users ON messages.user_id = users.id ORDER BY created_at DESC");
     while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-        echo "<li>[" . $row['created_at'] . "] " . $row['account'] . "：" . $row['content'] . "</li>";
+        echo "<li>[" . $row['created_at'] . "] " . htmlspecialchars($row['account']) . "：" . htmlspecialchars($row['content']) . "</li>";
     }
     ?>
 </body>

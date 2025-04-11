@@ -32,8 +32,10 @@ if (!empty($_POST['account']) && !empty($_POST['password'])) {
     $password = password_hash($_POST['password'], PASSWORD_DEFAULT); #密碼雜湊
     $stmt = $pdo->prepare("INSERT INTO users (account,password) VALUE (?,?)");
     $stmt->execute([$account, $password]);
+    $lastInsertId = $pdo->lastInsertId();
     // 記錄已登入的使用者
     session_start();
+    $_SESSION['user_id'] = $lastInsertId;
     $_SESSION['account'] = $account;
     header("Location:../");
 }
