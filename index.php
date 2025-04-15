@@ -1,12 +1,24 @@
 <?php 
 include_once 'Routes/Router.php';
 include_once 'Controller/MessageController.php';
+include_once 'Controller/AuthController.php';
+include_once 'Controller/HomeController.php';
 include_once 'database/db.php';
 
 $router = new Router;
 $messageController = new MessageController($pdo);
-
-$router->get('/',[$messageController,'index']);
+$authController = new AuthController($pdo);
+$homeController = new HomeController;
+// 首頁
+$router->get('/',[$homeController,'index']);
+// 會員路由
+$router->get('/login',[$authController,'index']);
+$router->post('/login',[$authController,'login']);
+$router->get('/register',[$authController,'create']);
+$router->post('/register',[$authController,'store']);
+$router->post('/logout',[$authController,'logout']);
+// 留言路由
+$router->get('/message',[$messageController,'index']);
 $router->get('/messages',[$messageController,'show']);
 $router->get('/messages/create',[$messageController,'create']);
 $router->post('/messages/create',[$messageController,'store']);
