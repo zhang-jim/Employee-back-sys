@@ -1,6 +1,8 @@
 <?php
-require __DIR__ . '/../Model/message.php';
-require_once 'Controller.php';
+namespace App\Controllers;
+
+use App\Controllers\Controller;
+use App\Models\Message;
 class MessageController extends Controller
 {
     private $messageModel;
@@ -11,7 +13,7 @@ class MessageController extends Controller
     // 留言板頁
     public function index()
     {
-        require __DIR__ . '/../View/message/index.php';
+        view('message/index');
     }
     // 新增留言頁
     public function create()

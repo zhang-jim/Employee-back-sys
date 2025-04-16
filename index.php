@@ -1,9 +1,14 @@
 <?php 
+require __DIR__ . '/vendor/autoload.php';
+
+use App\Controllers\HomeController;
+use App\Controllers\AuthController;
+use App\Controllers\MessageController;
+
+define('BASE_PATH',__DIR__);
 include_once 'Routes/Router.php';
-include_once 'Controller/MessageController.php';
-include_once 'Controller/AuthController.php';
-include_once 'Controller/HomeController.php';
 include_once 'database/db.php';
+include_once 'help.php';
 
 $router = new Router;
 $messageController = new MessageController($pdo);

@@ -1,6 +1,8 @@
 <?php
-require __DIR__ . '/../Model/user.php';
-require_once 'Controller.php';
+namespace App\Controllers;
+use App\Models\User;
+use App\Controllers\Controller;
+
 class AuthController extends Controller
 {
     private $authModel;
@@ -11,12 +13,12 @@ class AuthController extends Controller
     // 登入 Page
     public function index()
     {
-        require __DIR__ . '/../View/user/login.php';
+        view('user/login');
     }
     // 註冊 Page
     public function create()
     {
-        require __DIR__ . '/../View/user/register.php';
+        view('user/register');
     }
     // 註冊
     public function store()
@@ -79,5 +81,15 @@ class AuthController extends Controller
         $this->requireLogin();
         session_destroy();
         $this->jsonResponse(true, '登出成功！');
+    }
+    // 取得單一用戶資訊
+    public function show()
+    {
+        $this->requireLogin();
+        $user = $this->authModel->getUser($_SESSION['user_id']);
+        if (!$user) {
+            $this->jsonResponse(false, '帳號不存在');
+        }
+        $this->jsonResponse(true, $user);
     }
 }

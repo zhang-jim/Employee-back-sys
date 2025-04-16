@@ -1,4 +1,6 @@
 <?php
+namespace App\Models;
+use PDO;
 class User
 {
     private $pdo;
@@ -13,12 +15,12 @@ class User
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
     // 查詢用戶資料
-    // public function getUser($userID)
-    // {
-    //     $stmt = $this->pdo->query("SELECT * FROM users WHERE id = ?");
-    //     $stmt->execute([$userID]);
-    //     return $stmt->fetch(PDO::FETCH_ASSOC);
-    // }
+    public function getUser($userID)
+    {
+        $stmt = $this->pdo->prepare("SELECT account FROM users WHERE id = ?");
+        $stmt->execute([$userID]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
     public function create($account, $password)
     {
         $stmt = $this->pdo->prepare("INSERT INTO users (account,password) VALUE (?,?)");
