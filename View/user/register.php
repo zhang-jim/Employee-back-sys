@@ -135,7 +135,7 @@
           messageBox.classList.add("success");
           form.reset();
           setTimeout(() => {
-            window.location.href = "/login";
+            window.location.href = "/";
           }, 1500);
         } else {
           messageBox.textContent = data.message || "註冊失敗";
