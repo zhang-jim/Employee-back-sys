@@ -1,14 +1,16 @@
 <?php
+
 namespace App\Controllers;
-use App\Models\User;
+
 use App\Controllers\Controller;
+use App\Services\UserService;
 
 class AuthController extends Controller
 {
-    private $authModel;
+    private $userService;
     public function __construct($pdo)
     {
-        $this->authModel = new User($pdo);
+        $this->userService = new UserService($pdo);
     }
     // 登入 Page
     public function index()
@@ -30,23 +32,19 @@ class AuthController extends Controller
         $input  = json_decode(file_get_contents('php://input'), true);
         $account  = $input['account'] ?? null;
         $password = $input['password'] ?? null;
+        // 資料驗證
         if (!$account || !$password) {
             $this->jsonResponse(false, '資料輸入不完整');
         }
-        $user = $this->authModel->getByAccount($account);
-        // 判斷帳號是否被註冊
-        if ($user) {
-            $this->jsonResponse(false, '帳號已註冊');
-        };
-        // 密碼雜湊
-        $hashPassword = password_hash($password, PASSWORD_DEFAULT);
-        // 新增帳號
-        $this->authModel->create($account, $hashPassword);
-        // 自動登入帳號
-        $user = $this->authModel->getByAccount($account);
-        $_SESSION['user_id'] = $user['id'];
-        $_SESSION['account'] = $user['account'];
-        $this->jsonResponse(true, '註冊成功');
+        // 使用UserServices 註冊邏輯
+        try {
+            $user = $this->userService->register($input);
+            $_SESSION['user_id'] = $user['id'];
+            $_SESSION['account'] = $user['account'];
+            $this->jsonResponse(true,"註冊成功！");
+        } catch (\Throwable $e) {
+            $this->jsonResponse(false,$e->getMessage());
+        }
     }
     // 登入
     public function login()
@@ -59,25 +57,24 @@ class AuthController extends Controller
         $input  = json_decode(file_get_contents('php://input'), true);
         $account = $input['account'] ?? null;
         $password = $input['password'] ?? null;
+        // 資料驗證
         if (!$account || !$password) {
             $this->jsonResponse(false, '資料輸入不完整');
         }
-        $user = $this->authModel->getByAccount($account);
-        if (!$user) {
-            $this->jsonResponse(false, '帳號不存在');
-        }
-        if ($user && password_verify($password, $user['password'])) {
+        // 使用UserServices 判斷登入是否成功，並拋出例外 
+        try {
+            $user = $this->userService->login($account, $password);
             $_SESSION['user_id'] = $user['id'];
             $_SESSION['account'] = $account;
             $this->jsonResponse(true, '登入成功！');
-        } else {
-            $this->jsonResponse(false, '帳號或密碼錯誤！');
+        } catch (\Throwable $e) {
+            $this->jsonResponse(false, $e->getMessage());
         }
     }
     // 登出
     public function logout()
     {
-        // 判斷是否登入
+        // 判斷登入
         $this->requireLogin();
         session_destroy();
         $this->jsonResponse(true, '登出成功！');
@@ -85,11 +82,9 @@ class AuthController extends Controller
     // 取得單一用戶資訊
     public function show()
     {
+        // 判斷登入
         $this->requireLogin();
-        $user = $this->authModel->getUser($_SESSION['user_id']);
-        if (!$user) {
-            $this->jsonResponse(false, '帳號不存在');
-        }
+        $user = $this->userService->getinfo();
         $this->jsonResponse(true, $user);
     }
 }
