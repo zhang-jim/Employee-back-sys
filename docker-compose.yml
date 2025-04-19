@@ -1,0 +1,30 @@
+version: '3.8'
+services:
+  php:
+    build: .
+    image: php:8.2-apache
+    container_name: php-app
+    ports:
+      - "8000:80"
+    volumes:
+      - ./:/var/www/html
+    depends_on:
+      - db
+    environment:
+      - APACHE_DOCUMENT_ROOT=/var/www/html
+  db:
+    image: mysql:8.0
+    container_name: mysql-db
+    restart: always
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: employee_back_sys
+      MYSQL_USER: employee_back_sys
+      MYSQL_PASSWORD: F_dUnN5NQlsQhk_V
+    volumes:
+      - db_data:/var/lib/mysql
+    
+volumes:
+  db_data:

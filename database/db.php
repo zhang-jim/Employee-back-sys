@@ -1,6 +1,6 @@
 <?php
-$dsn = 'mysql:host=localhost;dbname=message_board;charset=utf8mb4';
-$username = 'message-board';
+$dsn = 'mysql:host=db;dbname=employee_back_sys;charset=utf8mb4';
+$username = 'employee_back_sys';
 $password = 'F_dUnN5NQlsQhk_V';
 try {
     $pdo = new PDO($dsn, $username, $password);
