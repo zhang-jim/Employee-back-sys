@@ -4,7 +4,6 @@ class Controller
 {
     protected function isLoggedIn(): bool
     {
-        session_start();
         return isset($_SESSION['user_id']);
     }
     protected function jsonResponse($success, $message)

@@ -63,7 +63,6 @@
         <h1>歡迎使用員工打卡系統</h1>
 
         <?php
-        session_start();
         if (isset($_SESSION['account'])) {
             echo "<div class='user-info'>目前登入：{$_SESSION['account']}</div>";
         }

@@ -119,7 +119,6 @@
 
     <div class="auth">
         <?php
-        session_start();
         if (isset($_SESSION['account'])) {
             echo "使用者：" . htmlspecialchars($_SESSION['account']) . " <button id='logoutBtn'>登出</button>";
         } else {
@@ -292,33 +291,33 @@
         loadMessages();
     </script>
     <script>
-  const logoutBtn = document.getElementById("logoutBtn");
+        const logoutBtn = document.getElementById("logoutBtn");
 
-  if (logoutBtn) {
-    logoutBtn.addEventListener("click", async () => {
-      if (!confirm("確定要登出嗎？")) return;
+        if (logoutBtn) {
+            logoutBtn.addEventListener("click", async () => {
+                if (!confirm("確定要登出嗎？")) return;
 
-      try {
-        const res = await fetch("/logout", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          }
-        });
+                try {
+                    const res = await fetch("/logout", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        }
+                    });
 
-        const data = await res.json();
-        if (data.success) {
-          window.location.href = "/login";
-        } else {
-          alert("登出失敗：" + data.message);
+                    const data = await res.json();
+                    if (data.success) {
+                        window.location.href = "/login";
+                    } else {
+                        alert("登出失敗：" + data.message);
+                    }
+                } catch (err) {
+                    alert("無法連線伺服器，登出失敗");
+                    console.error(err);
+                }
+            });
         }
-      } catch (err) {
-        alert("無法連線伺服器，登出失敗");
-        console.error(err);
-      }
-    });
-  }
-</script>
+    </script>
 </body>
 
 </html>
