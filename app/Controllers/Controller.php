@@ -19,4 +19,10 @@ class Controller
             $this->jsonResponse(false, '請登入帳戶');
         }
     }
+    // 需要是網站管理員，才可進行後續動作
+    protected function requireAdmin(){
+        if($_SESSION['role_id'] !== 1){
+           $this->jsonResponse(false,"權限不足"); 
+        }
+    }
 }

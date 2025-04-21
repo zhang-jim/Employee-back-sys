@@ -40,6 +40,7 @@ class AuthController extends Controller
         try {
             $user = $this->userService->register($input);
             $_SESSION['user_id'] = $user['id'];
+            $_SESSION['role_id'] = $user['role_id'];
             $_SESSION['account'] = $user['account'];
             $this->jsonResponse(true,"註冊成功！");
         } catch (\Throwable $e) {
@@ -65,6 +66,7 @@ class AuthController extends Controller
         try {
             $user = $this->userService->login($account, $password);
             $_SESSION['user_id'] = $user['id'];
+            $_SESSION['role_id'] = $user['role_id'];
             $_SESSION['account'] = $account;
             $this->jsonResponse(true, '登入成功！');
         } catch (\Throwable $e) {

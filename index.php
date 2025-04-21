@@ -6,6 +6,7 @@ use App\Controllers\HomeController;
 use App\Controllers\AuthController;
 use App\Controllers\MessageController;
 use App\Controllers\AttendanceController;
+use App\Controllers\DepartmentController;
 
 define('BASE_PATH',__DIR__);
 include_once 'Routes/Router.php';
@@ -16,7 +17,9 @@ $router = new Router;
 $messageController = new MessageController($pdo);
 $authController = new AuthController($pdo);
 $attendanceController = new AttendanceController($pdo);
+$departmentController = new DepartmentController($pdo);
 $homeController = new HomeController;
+
 // 首頁
 $router->get('/',[$homeController,'index']);
 // 會員路由
@@ -35,5 +38,10 @@ $router->delete('/messages/{id}',[$messageController,'delete']);
 // 出勤路由
 $router->post('/check-in',[$attendanceController,'store']);
 $router->post('/check-out',[$attendanceController,'update']);
+// 部門路由
+$router->get('/departments',[$departmentController,'index']);
+$router->post('/departments/create',[$departmentController,'store']);
+$router->put('/departments/{id}',[$departmentController,'update']);
+$router->delete('/departments/{id}',[$departmentController,'delete']);
 
 $router->dispatch($_SERVER['REQUEST_URI'],$_SERVER['REQUEST_METHOD']);
