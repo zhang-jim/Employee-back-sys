@@ -48,13 +48,13 @@ class DepartmentController extends Controller
         }
         $input = json_decode(file_get_contents('php://input', true));
         $name = $input['name'] ?? null;
-        $check_in_time = $input['check-in-time'] ?? null;
-        $check_out_time = $input['check-out-time'] ?? null;
-        if (!$name || !$check_in_time || !$check_out_time) {
+        $work_start = $input['work-start'] ?? null;
+        $work_end = $input['work-end'] ?? null;
+        if (!$name || !$work_start || !$work_end) {
             $this->jsonResponse(false, '資料不完整');
         }
         try {
-            $this->departmentService->updateDepartment($id, $name, $check_in_time, $check_out_time);
+            $this->departmentService->updateDepartment($id, $name, $work_start, $work_end);
             $this->jsonResponse(true, "部門資料修改成功");
         } catch (\Throwable $e) {
             $this->jsonResponse(false, $e->getMessage());

@@ -14,18 +14,18 @@ class DepartmentService{
     }
     public function createDepartment($input){
         $name = $input['name'];
-        $check_in_time = $input['check-in-time'];
-        $check_out_time = $input['check-out-time'];
+        $work_start = $input['work-start'];
+        $work_end = $input['work-end'];
         if($this->departmentModel->getByName($name)){
             throw new Exception("該部門已存在，無法新增");
         };
-        $this->departmentModel->create($name,$check_in_time,$check_out_time);
+        $this->departmentModel->create($name,$work_start,$work_end);
     }
-    public function updateDepartment($id,$name,$check_in_time,$check_out_time){
+    public function updateDepartment($id,$name,$work_start,$work_end){
         if(!$this->departmentModel->getById($id)){
             throw new Exception("部門不存在，無法編輯");
         };
-        $this->departmentModel->update($name,$check_in_time,$check_out_time,$id);
+        $this->departmentModel->update($name,$work_start,$work_end,$id);
     }
     public function deleteDepartment($id){
         // 判斷ID是否存在

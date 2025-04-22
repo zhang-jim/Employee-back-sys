@@ -26,15 +26,15 @@ class Department
         $stmt = $this->pdo->query("SELECT * FROM departments");
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
-    public function create($name, $check_in_time, $check_out_time)
+    public function create($name, $work_start, $work_end)
     {
-        $stmt = $this->pdo->prepare("INSERT INTO departments (name,check_in_time,check_out_time) VALUE (?,?,?)");
-        $stmt->execute([$name, $check_in_time, $check_out_time]);
+        $stmt = $this->pdo->prepare("INSERT INTO departments (name,work_start,work_end) VALUE (?,?,?)");
+        $stmt->execute([$name, $work_start, $work_end]);
     }
-    public function update($name, $check_in_time, $check_out_time, $departmentID)
+    public function update($name, $work_start, $work_end, $departmentID)
     {
-        $stmt = $this->pdo->prepare("UPDATE departments SET (name,check_in_time,check_out_time) VALUE (?,?,?) WHERE id = ?");
-        $stmt->execute([$name, $check_in_time, $check_out_time, $departmentID]);
+        $stmt = $this->pdo->prepare("UPDATE departments SET (name,work_start,work_end) VALUE (?,?,?) WHERE id = ?");
+        $stmt->execute([$name, $work_start, $work_end, $departmentID]);
     }
     public function delete($departmentID)
     {
