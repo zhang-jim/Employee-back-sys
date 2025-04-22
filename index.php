@@ -1,5 +1,6 @@
 <?php 
 require __DIR__ . '/vendor/autoload.php';
+date_default_timezone_set('Asia/Taipei');
 session_start();
 
 use App\Controllers\HomeController;
@@ -36,6 +37,7 @@ $router->post('/messages/create',[$messageController,'store']);
 $router->put('/messages/{id}',[$messageController,'update']);
 $router->delete('/messages/{id}',[$messageController,'delete']);
 // 出勤路由
+$router->get('/check-in',[$attendanceController,'index']);
 $router->post('/check-in',[$attendanceController,'store']);
 $router->post('/check-out',[$attendanceController,'update']);
 // 部門路由

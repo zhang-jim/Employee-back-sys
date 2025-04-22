@@ -12,7 +12,10 @@ class AttendanceController extends Controller
     {
         $this->attendanceService = new AttendanceService($pdo);
     }
-    public function index() {}
+    // 打卡頁面
+    public function index() {
+        return view('/check-in');
+    }
     // 上班打卡
     public function store()
     {
@@ -46,7 +49,7 @@ class AttendanceController extends Controller
             $this->attendanceService->checkOut();
             $this->jsonResponse(true, "下班打卡成功！");
         } catch (\Throwable $e) {
-            $this->jsonResponse(false,$e->getMessage());
+            $this->jsonResponse(false, $e->getMessage());
         }
     }
 }
