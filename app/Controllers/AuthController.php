@@ -81,12 +81,55 @@ class AuthController extends Controller
         session_destroy();
         $this->jsonResponse(true, '登出成功！');
     }
-    // 取得單一用戶資訊
+    // 檢視個人資料
     public function show()
     {
         // 判斷登入
         $this->requireLogin();
         $user = $this->userService->getinfo();
-        $this->jsonResponse(true, $user);
+        $this->jsonResponse(true, ['user' => $user]);
+    }
+    // 編輯個人資料
+    public function update(){
+        // 判斷登入
+        $this->requireLogin();
+        $input = json_decode(file_get_contents('php://input'),true);
+        $new_nickname = $input['nickname'] ?? null;
+        $new_phone_number = $input['phone-number'] ?? null;
+
+        $result = $this->userService->updateinfo($new_nickname,$new_phone_number);
+    
+        if($result['success']){
+            $this->jsonResponse(true,$result['message']);
+        }else{
+            $this->jsonResponse(false,$result['message']);
+        }
+        
+    }
+    // 重設密碼
+    public function resetPassword(){
+        $this->requireLogin();
+        $input = json_decode(file_get_contents('php://input'),true);
+        $old_password = $input['password'] ?? null;
+        $new_password = $input['new-password'] ?? null;
+        // 驗證資料是否為空
+        if(empty($old_password) || empty($new_password)){
+            $this->jsonResponse(false,"失敗，密碼不得為空");
+        }
+        // 驗證密碼長度
+        if(strlen($new_password) < 8){
+            $this->jsonResponse(false,"密碼長度至少需要8個字元");
+        }
+        // 驗證密碼是否只包含英數
+        if (!preg_match('/[A-Z]/', $new_password) || !preg_match('/[a-z]/', $new_password) || !preg_match('/[0-9]/', $new_password)) {
+            $this->jsonResponse(false, '密碼需包含大小寫字母與數字');
+        }
+
+        $results = $this->userService->resetPassword($old_password,$new_password);
+        if($results){
+            $this->jsonResponse(true,$results['message']);
+        }else{
+            $this->jsonResponse(false,$results['message']);
+        }
     }
 }

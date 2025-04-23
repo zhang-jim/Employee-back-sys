@@ -29,6 +29,12 @@ $router->post('/login',[$authController,'login']);
 $router->get('/register',[$authController,'create']);
 $router->post('/register',[$authController,'store']);
 $router->post('/logout',[$authController,'logout']);
+// 檢視個人資料
+$router->post('/user',[$authController,'show']);
+// 個人資料編輯
+$router->post('/user/edit',[$authController,'update']);
+//重設密碼
+$router->post('/user/reset-password',[$authController,'resetPassword']);
 // 留言路由
 $router->get('/message',[$messageController,'index']);
 $router->get('/messages',[$messageController,'show']);
