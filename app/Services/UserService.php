@@ -12,10 +12,12 @@ class UserService
     {
         $this->userModel = new User($pdo);
     }
-    public function register($input)
+    public function register($data)
     {
-        $account = $input['account'];
-        $password = $input['password'];
+        $account = $data['account'];
+        $password = $data['password'];
+        $nickname = $data['nickname'];
+        $phonenumber = $data['phonenumber'];
         // 查詢帳號是否存在，判斷是否註冊
         $user = $this->userModel->getByAccount($account);
         if ($user) {
@@ -24,7 +26,7 @@ class UserService
         // 密碼雜湊
         $hashPassword = password_hash($password, PASSWORD_DEFAULT);
         // 新增帳號
-        $this->userModel->create($account, $hashPassword);
+        $this->userModel->create($nickname,$phonenumber,$account, $hashPassword);
         // 自動登入帳號
         $user = $this->userModel->getByAccount($account);
         return $user;
@@ -74,7 +76,7 @@ class UserService
     public function resetPassword($old_password, $new_password)
     {
         //取得使用者資料
-        $user = $this->getinfo();
+        $user = $this->userModel->privateGetUser($_SESSION['user_id']);
         // 判斷原始密碼是否正確
         if (!password_verify($old_password, $user['password'])) {
             return ['success' => false, 'message' => '密碼重設失敗'];

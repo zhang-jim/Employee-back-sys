@@ -32,19 +32,22 @@ class AuthController extends Controller
         $input  = json_decode(file_get_contents('php://input'), true);
         $account  = $input['account'] ?? null;
         $password = $input['password'] ?? null;
+        $nickname = $input['nickname'] ?? null;
+        $phonenumber = $input['phonenumber'] ?? null;
         // 資料驗證
-        if (!$account || !$password) {
+        if (!$account || !$password || !$nickname || !$phonenumber) {
             $this->jsonResponse(false, '資料輸入不完整');
         }
+        $data = ['account' => $account,'password' => $password,'nickname'=>$nickname,'phonenumber'=>$phonenumber];
         // 使用UserServices 註冊邏輯
         try {
-            $user = $this->userService->register($input);
+            $user = $this->userService->register($data);
             $_SESSION['user_id'] = $user['id'];
             $_SESSION['role_id'] = $user['role_id'];
             $_SESSION['account'] = $user['account'];
-            $this->jsonResponse(true,"註冊成功！");
+            $this->jsonResponse(true, "註冊成功！");
         } catch (\Throwable $e) {
-            $this->jsonResponse(false,$e->getMessage());
+            $this->jsonResponse(false, $e->getMessage());
         }
     }
     // 登入
@@ -81,6 +84,11 @@ class AuthController extends Controller
         session_destroy();
         $this->jsonResponse(true, '登出成功！');
     }
+    // 檢視個人資料 Page
+    public function showInfo()
+    {
+        return view('/user/info');
+    }
     // 檢視個人資料
     public function show()
     {
@@ -90,46 +98,47 @@ class AuthController extends Controller
         $this->jsonResponse(true, ['user' => $user]);
     }
     // 編輯個人資料
-    public function update(){
+    public function update()
+    {
         // 判斷登入
         $this->requireLogin();
-        $input = json_decode(file_get_contents('php://input'),true);
+        $input = json_decode(file_get_contents('php://input'), true);
         $new_nickname = $input['nickname'] ?? null;
         $new_phone_number = $input['phone-number'] ?? null;
 
-        $result = $this->userService->updateinfo($new_nickname,$new_phone_number);
-    
-        if($result['success']){
-            $this->jsonResponse(true,$result['message']);
-        }else{
-            $this->jsonResponse(false,$result['message']);
+        $result = $this->userService->updateinfo($new_nickname, $new_phone_number);
+
+        if ($result['success']) {
+            $this->jsonResponse(true, $result['message']);
+        } else {
+            $this->jsonResponse(false, $result['message']);
         }
-        
     }
     // 重設密碼
-    public function resetPassword(){
+    public function resetPassword()
+    {
         $this->requireLogin();
-        $input = json_decode(file_get_contents('php://input'),true);
+        $input = json_decode(file_get_contents('php://input'), true);
         $old_password = $input['password'] ?? null;
         $new_password = $input['new-password'] ?? null;
         // 驗證資料是否為空
-        if(empty($old_password) || empty($new_password)){
-            $this->jsonResponse(false,"失敗，密碼不得為空");
+        if (empty($old_password) || empty($new_password)) {
+            $this->jsonResponse(false, "失敗，密碼不得為空");
         }
         // 驗證密碼長度
-        if(strlen($new_password) < 8){
-            $this->jsonResponse(false,"密碼長度至少需要8個字元");
+        if (strlen($new_password) < 8) {
+            $this->jsonResponse(false, "密碼長度至少需要8個字元");
         }
         // 驗證密碼是否只包含英數
         if (!preg_match('/[A-Z]/', $new_password) || !preg_match('/[a-z]/', $new_password) || !preg_match('/[0-9]/', $new_password)) {
             $this->jsonResponse(false, '密碼需包含大小寫字母與數字');
         }
 
-        $results = $this->userService->resetPassword($old_password,$new_password);
-        if($results){
-            $this->jsonResponse(true,$results['message']);
-        }else{
-            $this->jsonResponse(false,$results['message']);
+        $results = $this->userService->resetPassword($old_password, $new_password);
+        if ($results) {
+            $this->jsonResponse(true, $results['message']);
+        } else {
+            $this->jsonResponse(false, $results['message']);
         }
     }
 }
