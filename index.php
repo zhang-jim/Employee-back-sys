@@ -10,7 +10,7 @@ use App\Controllers\AttendanceController;
 use App\Controllers\DepartmentController;
 
 define('BASE_PATH',__DIR__);
-include_once 'Routes/Router.php';
+include_once 'routes/Router.php';
 include_once 'database/db.php';
 include_once 'help.php';
 
@@ -22,34 +22,40 @@ $departmentController = new DepartmentController($pdo);
 $homeController = new HomeController;
 
 // 首頁
-$router->get('/',[$homeController,'index']);
+$router->get('/',function(){
+    return view('index');
+});
+// 控制台
+$router->get('/dashboard',[$homeController,'index']);
 // 會員路由
 $router->get('/login',[$authController,'index']);
-$router->post('/login',[$authController,'login']);
+$router->post('/api/login',[$authController,'login']);
 $router->get('/register',[$authController,'create']);
-$router->post('/register',[$authController,'store']);
-$router->post('/logout',[$authController,'logout']);
-// 檢視個人資料
-$router->post('/user',[$authController,'show']);
+$router->post('/api/register',[$authController,'store']);
+$router->post('/api/logout',[$authController,'logout']);
+// 檢視個人資料 
+$router->get('/user',[$authController,'showInfo']);
+$router->post('/api/user',[$authController,'show']);
 // 個人資料編輯
-$router->post('/user/edit',[$authController,'update']);
+$router->post('/api/user/edit',[$authController,'update']);
 //重設密碼
-$router->post('/user/reset-password',[$authController,'resetPassword']);
+$router->post('/api/user/reset-password',[$authController,'resetPassword']);
 // 留言路由
 $router->get('/message',[$messageController,'index']);
 $router->get('/messages',[$messageController,'show']);
 $router->get('/messages/create',[$messageController,'create']);
-$router->post('/messages/create',[$messageController,'store']);
-$router->put('/messages/{id}',[$messageController,'update']);
-$router->delete('/messages/{id}',[$messageController,'delete']);
-// 出勤路由
-$router->get('/check-in',[$attendanceController,'index']);
-$router->post('/check-in',[$attendanceController,'store']);
-$router->post('/check-out',[$attendanceController,'update']);
+$router->post('/api/messages/create',[$messageController,'store']);
+$router->put('/api/messages/{id}',[$messageController,'update']);
+$router->delete('/api/messages/{id}',[$messageController,'delete']);
+// 打卡紀錄
+$router->get('/check-record',[$attendanceController,'show']); 
+$router->get('/api/check-record',[$attendanceController,'index']);
+$router->post('/api/check-in',[$attendanceController,'store']);
+$router->post('/api/check-out',[$attendanceController,'update']);
 // 部門路由
 $router->get('/departments',[$departmentController,'index']);
-$router->post('/departments/create',[$departmentController,'store']);
-$router->put('/departments/{id}',[$departmentController,'update']);
-$router->delete('/departments/{id}',[$departmentController,'delete']);
+$router->post('/api/departments/create',[$departmentController,'store']);
+$router->put('/api/departments/{id}',[$departmentController,'update']);
+$router->delete('/api/departments/{id}',[$departmentController,'delete']);
 
 $router->dispatch($_SERVER['REQUEST_URI'],$_SERVER['REQUEST_METHOD']);
