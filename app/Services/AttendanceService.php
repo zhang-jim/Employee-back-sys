@@ -29,6 +29,9 @@ class AttendanceService
         if ($this->todayCheck()) {
             throw new Exception("今日已打卡上班");
         }
+        if (!$this->hasDepartment()) {
+            throw new Exception("未設定部門，無法打卡");
+        }
         $now = new DateTime();
         $datetime = $now->format('Y-m-d H:i:s');
         $lateArray = $this->getStatus('late', $now);
@@ -64,10 +67,15 @@ class AttendanceService
 
         $this->attendanceModel->update($this->userID, $this->workStatus, $this->date, $datetime);
     }
-    // 當日打卡狀態判斷(遲到、早退、)
+    // 檢查用戶是否有隸屬部門。
+    private function hasDepartment()
+    {
+        return (bool) $this->attendanceModel->getUserDepartmentSchedule($this->userID);
+    }
+    // 當日打卡狀態判斷(遲到、早退、未打卡)
     private function getStatus($status, $now)
     {
-        $user_department_schedule = $this->attendanceModel->getUserDepartmentSchedule($_SESSION['user_id']);
+        $user_department_schedule = $this->attendanceModel->getUserDepartmentSchedule($this->userID);
         switch ($status) {
             case 'late':
                 $workStart = new DateTime($now->format('Y-m-d') . $user_department_schedule['work_start']);
@@ -88,5 +96,14 @@ class AttendanceService
                 break;
         }
         return $this->workStatus;
+    }
+    // 取得單一用戶打卡紀錄
+    public function getRecord()
+    {
+        $attendances = $this->attendanceModel->getAttendances($_SESSION['user_id']);
+        if (!$attendances) {
+            return ['success' => false, 'message' => '不存在打卡紀錄'];
+        }
+        return ['success' => true, 'message' => $attendances];
     }
 }

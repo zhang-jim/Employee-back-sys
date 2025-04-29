@@ -25,11 +25,11 @@ class Attendance
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
     // 查詢 單一用戶所有打卡紀錄
-    public function getAttendance($userID)
+    public function getAttendances($userID)
     {
-        $stmt = $this->pdo->prepare("SELECT * FROM attendances WHERE user_id = ? ORDER BY `date` DESC LIMIT 20");
+        $stmt = $this->pdo->prepare("SELECT date,check_in,check_out,status,late_minutes FROM attendances WHERE user_id = ? ORDER BY `date` DESC LIMIT 10");
         $stmt->execute([$userID]);
-        return $stmt->fetch(PDO::FETCH_ASSOC);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
     // 查詢 所有用戶所有打卡紀錄(限管理員)
     public function getAll()
