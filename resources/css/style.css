@@ -1,0 +1,56 @@
+body {
+    display: flex;
+    flex-direction: row;
+}
+
+.toolbar {
+    background-color: #006A71;
+    width: 212px;
+    height: auto;
+    min-height: 100vh;
+    text-align: center;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+.toolbar h3 {
+    background-color: #48A6A7;
+    color: #F2EFE7;
+    height: 35px;
+    padding: 25px 15px;
+    margin: 0px;
+    font-size: 20px
+}
+
+.toolbar ul li {
+    padding-top: 25px;
+    font-size: 1.3em
+}
+
+.main-container {
+    width: 85%;
+}
+
+.main-container header {
+    background-color: #fcedd5;
+    padding: 25px 15px;
+    height: 35px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.main-container header div {
+    display: flex;
+    align-items: center;
+}
+
+.main-container header h2 {
+    margin: 0;
+}
+
+.main-container header label {
+    font-size: 1.5em;
+    margin-right: 15px;
+}

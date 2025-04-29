@@ -4,107 +4,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>員工打卡系統</title>
+    <title>員工打卡系統-入口</title>
+    <link rel="stylesheet" href="/resources/css/reset.css">
     <style>
         body {
-            font-family: "Microsoft JhengHei", sans-serif;
-            background-color: #f0f2f5;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
             height: 100vh;
-            margin: 0;
-        }
-
-        .container {
-            background-color: white;
-            padding: 2em;
-            border-radius: 12px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            text-align: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
         }
 
         h1 {
-            color: #333;
-            margin-bottom: 1em;
+            font-size: 3.5rem;
+            color: #006A71;
+            text-align: center;
         }
 
-        .actions a,
-        .actions button {
-            display: inline-block;
-            margin: 0.5em;
-            padding: 0.75em 1.5em;
-            font-size: 1em;
-            text-decoration: none;
-            color: white;
-            background-color: #007bff;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: background-color 0.3s;
+        .bar {
+            text-align: right;
+            position: absolute;
+            top: 34px;
+            right: 34px;
         }
 
-        .actions a:hover,
-        .actions button:hover {
-            background-color: #0056b3;
+        .bar a {
+            background-color: #9ACBD0;
+            color: #006A71;
         }
 
-        .user-info {
-            margin-bottom: 1em;
-            font-weight: bold;
-            color: #555;
+        .bar :nth-child(1) {
+            margin-right: 20px;
         }
     </style>
 </head>
 
 <body>
-    <div class="container">
-        <h1>歡迎使用員工打卡系統</h1>
-
-        <?php
-        if (isset($_SESSION['account'])) {
-            echo "<div class='user-info'>目前登入：{$_SESSION['account']}</div>";
-        }
-        ?>
-
-        <div class="actions">
-            <?php if (isset($_SESSION['account'])): ?>
-                <a href="/clock-in">我要打卡</a>
-                <button id="logoutBtn">登出</button>
-            <?php else: ?>
-                <a href="/login">登入</a>
-                <a href="/register">註冊</a>
-            <?php endif; ?>
-        </div>
+    <h1>XX公司後台系統</h1>
+    <div class="bar">
+        <a href="/login">登入</a>
+        <a href="/register">註冊</a>
     </div>
-
-    <script>
-        const logoutBtn = document.getElementById("logoutBtn");
-        if (logoutBtn) {
-            logoutBtn.addEventListener("click", async () => {
-                if (!confirm("確定要登出嗎？")) return;
-
-                try {
-                    const res = await fetch("/logout", {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json"
-                        }
-                    });
-                    const data = await res.json();
-                    if (data.success) {
-                        window.location.href = "/login";
-                    } else {
-                        alert("登出失敗：" + data.message);
-                    }
-                } catch (err) {
-                    alert("無法連線伺服器，登出失敗");
-                    console.error(err);
-                }
-            });
-        }
-    </script>
 </body>
 
 </html>
