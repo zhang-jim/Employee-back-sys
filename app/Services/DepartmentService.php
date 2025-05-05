@@ -9,6 +9,10 @@ class DepartmentService{
     public function __construct($pdo){
         $this->departmentModel = new Department($pdo);
     }
+    public function getDepartmentId($name){
+        $department = $this->departmentModel->getByName($name);
+        return $department['id'];
+    }
     public function showAllDepartment(){
         return $this->departmentModel->getAll();
     }
@@ -17,7 +21,7 @@ class DepartmentService{
         $work_start = $input['work-start'];
         $work_end = $input['work-end'];
         if($this->departmentModel->getByName($name)){
-            throw new Exception("該部門已存在，無法新增");
+            throw new Exception("部門已存在，無法新增");
         };
         $this->departmentModel->create($name,$work_start,$work_end);
     }

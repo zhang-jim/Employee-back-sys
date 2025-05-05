@@ -11,7 +11,7 @@ class Message
     // 查詢所有留言
     public function getAll()
     {
-        $stmt = $this->pdo->query("SELECT messages.id,messages.content,messages.created_at,users.account FROM messages JOIN users ON messages.user_id = users.id ORDER BY created_at DESC");
+        $stmt = $this->pdo->query("SELECT messages.id,messages.content,messages.created_at,users.name FROM messages JOIN users ON messages.user_id = users.id ORDER BY created_at DESC");
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
     // 查詢單一留言

@@ -34,7 +34,7 @@ class Attendance
     // 查詢 所有用戶所有打卡紀錄(限管理員)
     public function getAll()
     {
-        $stmt = $this->pdo->query("SELECT attendances.id,attendances.date,attendances.check_in,attendances.check_out,user.account FROM attendances JOIN users ON attendances.user_id = users.id ORDER BY `date` DESC LIMIT 20");
+        $stmt = $this->pdo->query("SELECT attendances.id,attendances.date,attendances.check_in,attendances.check_out,user.name FROM attendances JOIN users ON attendances.user_id = users.id ORDER BY `date` DESC LIMIT 20");
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
     // 新增 打卡紀錄(上班打卡)

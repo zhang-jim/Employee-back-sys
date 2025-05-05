@@ -14,12 +14,12 @@ class Department
     public function getById($id){
         $stmt = $this->pdo->prepare("SELECT * FROM departments WHERE id = ?");
         $stmt->execute([$id]);
-        $stmt->fetch(PDO::FETCH_ASSOC);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
     }
     public function getByName($name){
         $stmt = $this->pdo->prepare("SELECT * FROM departments WHERE name = ?");
         $stmt->execute([$name]);
-        $stmt->fetch(PDO::FETCH_ASSOC);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
     }
     public function getAll()
     {

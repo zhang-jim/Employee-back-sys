@@ -11,30 +11,46 @@ class User
     {
         $this->pdo = $pdo;
     }
+    public function findByFields($fields)
+    {
+        $conditions = [];
+        $params = [];
+        foreach ($fields as $key => $value) {
+            $conditions[] = "$key = ?";
+            $params[] = $value;
+        }
+        $sql = "SELECT * FROM users WHERE " . implode(" OR ", $conditions) . " LIMIT 1";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute($params);
 
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
     public function getByAccount($account)
     {
-        $stmt = $this->pdo->prepare("SELECT * FROM users WHERE account = ?");
-        $stmt->execute([$account]);
+        $stmt = $this->pdo->prepare("SELECT * FROM users WHERE email = :account OR phone_number = :account");
+        $stmt->execute(['account' => $account]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
     // 查詢用戶資料
     public function getUser($userID)
     {
-        $stmt = $this->pdo->prepare("SELECT departments.name, users.account, users.nickname, users.phone_number, users.created_at FROM users JOIN departments ON users.department_id = departments.id WHERE users.id = ?");
+        $stmt = $this->pdo->prepare("SELECT departments.name, users.name, users.nickname, users.phone_number, users.created_at FROM users JOIN departments ON users.department_id = departments.id WHERE users.id = ?");
         $stmt->execute([$userID]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
     // 查詢私密資料
-    public function privateGetUser($userID) {
+    public function privateGetUser($userID)
+    {
         $stmt = $this->pdo->prepare("SELECT password FROM users WHERE id = ?");
         $stmt->execute([$userID]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
-    } 
-    public function create($nickname,$phonenumber,$account, $password)
+    }
+    public function create($email, $password, $name, $nickname, $sex, $birthday, $phonenumber, $onBoardDate, $departmentId)
     {
-        $stmt = $this->pdo->prepare("INSERT INTO users (nickname,phone_number,account,password) VALUE (?,?,?,?)");
-        $stmt->execute([$nickname,$phonenumber,$account, $password]);
+        $stmt = $this->pdo->prepare(
+            "INSERT INTO users (email,password,name,nickname,sex,birthday,phone_number,on_board_date,department_id) VALUE (?,?,?,?,?,?,?,?,?)"
+        );
+        $stmt->execute([$email, $password, $name, $nickname, $sex, $birthday, $phonenumber, $onBoardDate, $departmentId]);
     }
     // 編輯用戶資料
     public function update($userID, $nickname = null, $phone_number = null)
