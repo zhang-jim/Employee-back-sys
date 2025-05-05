@@ -15,8 +15,6 @@ class AttendanceController extends Controller
     // 顯示該用戶當月打卡紀錄
     public function index()
     {
-        // 判斷登入
-        $this->requireLogin();
         $results = $this->attendanceService->getRecord();
         if($results){
             $this->jsonResponse(true,$results['message']);
@@ -27,8 +25,6 @@ class AttendanceController extends Controller
     // 上班打卡
     public function store()
     {
-        // 判斷登入
-        $this->requireLogin();
         // 取前端值
         $input = json_decode(file_get_contents('php://input'), true);
         $type = $input['type'] ?? null;
@@ -46,7 +42,6 @@ class AttendanceController extends Controller
     // 下班打卡
     public function update()
     {
-        $this->requireLogin(); //判斷登入
         $input = json_decode(file_get_contents('php://input'), true);
         $type = $input['type'] ?? null;
         // 新增打卡紀錄時，檢查type是否為下班

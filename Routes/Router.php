@@ -27,12 +27,11 @@ class Router
     {
         $path = parse_url($url, PHP_URL_PATH);
         foreach ($this->routes[$method] as $route => $callback) {
-            // 將 /messages/{id} 轉為 regex
             $pattern = preg_replace('#\{[a-zA-Z_][a-zA-Z0-9_]*\}#', '([a-zA-Z0-9_]+)', $route);
             $pattern = "#^" . $pattern . "$#";
 
             if (preg_match($pattern, $path, $matches)) {
-                array_shift($matches); // 第一個是整體匹配，移除
+                array_shift($matches); 
                 return call_user_func_array($callback, $matches);
             }
         }

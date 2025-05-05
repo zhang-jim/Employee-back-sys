@@ -13,7 +13,6 @@ class DepartmentController extends Controller
     }
     public function index(){
         //  驗證登入、是否為管理員
-        $this->requireLogin();
         $this->requireAdmin();
         $departments = $this->departmentService->showAllDepartment();
         if(!$departments){
@@ -24,7 +23,6 @@ class DepartmentController extends Controller
     public function store()
     {
         //  驗證登入、是否為管理員
-        $this->requireLogin();
         $this->requireAdmin();
         $input = json_decode(file_get_contents('php://input', true));
         $name = $input['name'] ?? null;
@@ -41,7 +39,6 @@ class DepartmentController extends Controller
     public function update($id)
     {
         //  驗證登入、是否為管理員
-        $this->requireLogin();
         $this->requireAdmin();
         if (!$id) {
             $this->jsonResponse(false, '請求失敗');
@@ -63,7 +60,6 @@ class DepartmentController extends Controller
     public function delete($id)
     {
         //  驗證登入、是否為管理員
-        $this->requireLogin();
         $this->requireAdmin();
         if (!$id) {
             $this->jsonResponse(false, '請求失敗');

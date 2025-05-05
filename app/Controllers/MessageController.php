@@ -23,7 +23,6 @@ class MessageController extends Controller
     // 新增留言功能
     public function store()
     {
-        $this->requireLogin();
         // 取得前端JSON
         $input = json_decode(file_get_contents('php://input'), true);
         $message = trim($input['message'] ?? null);
@@ -44,7 +43,6 @@ class MessageController extends Controller
     // 更新留言功能
     public function update($id)
     {
-        $this->requireLogin();
         $input = json_decode(file_get_contents('php://input'), true);
         $newMessage = $input['new_message'] ?? null;
         // 訊息、ID是否為空
@@ -72,7 +70,6 @@ class MessageController extends Controller
     // 刪除留言功能
     public function delete($id)
     {
-        $this->requireLogin();
         // 判斷ID是否存在
         if (!isset($id)) {
             $this->jsonResponse(false, '資料不完整，刪除失敗');

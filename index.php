@@ -3,6 +3,7 @@ require __DIR__ . '/vendor/autoload.php';
 date_default_timezone_set('Asia/Taipei');
 session_start();
 
+use App\Middlewares\AuthMiddleware; 
 use App\Controllers\HomeController;
 use App\Controllers\AuthController;
 use App\Controllers\MessageController;
@@ -21,6 +22,13 @@ $attendanceController = new AttendanceController($pdo);
 $departmentController = new DepartmentController($pdo);
 $homeController = new HomeController;
 
+// 不須經過登入驗證的白名單路由
+$publicRoutes = ['/','/register','/login','/api/register','/api/login'];
+$currentPath = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+// 對白名單外的URL進行登入驗證，若未登入則返回錯誤。
+if(!in_array($currentPath,$publicRoutes)){
+    AuthMiddleware::handle();
+}
 // 首頁
 $router->get('/',function(){
     return view('index');
@@ -37,7 +45,7 @@ $router->post('/api/logout',[$authController,'logout']);
 $router->get('/user',[$authController,'showInfo']);
 $router->post('/api/user',[$authController,'show']);
 // 個人資料編輯
-$router->post('/api/user/edit',[$authController,'update']);
+$router->post('/api/user/update',[$authController,'update']);
 //重設密碼
 $router->post('/api/user/reset-password',[$authController,'resetPassword']);
 // 留言路由
