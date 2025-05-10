@@ -81,32 +81,40 @@ class UserService
         return $this->userModel->getUser($_SESSION['user_id']);
     }
     // 編輯單一用戶資訊
-    public function updateinfo($nickname, $phone_number)
-    {
-        // 取得用戶資料
-        $user = $this->getinfo();
-        $old_nickname = $user['nickname'];
-        $old_phone_number = $user['phone_number'];
 
+    public function updateinfo($data)
+    {
         $updates = [];
-        // 判斷進來的資料都為空
-        if (!empty($nickname) && $nickname !== $old_nickname) {
-            $updates['nickname'] = $nickname;
-        }
-        if (!empty($phone_number) && $phone_number !== $old_phone_number) {
-            $updates['phone_number'] = $old_phone_number;
+
+        //欄位對應表 對應前端參數轉換為後端資料庫設定的欄位，也等於白名單功能，只針對特定欄位設定對應參數
+        $fieldsMap = [
+            'email' => 'email',
+            'name' => 'name',
+            'nickname' => 'nickname',
+            'sex' => 'sex',
+            'phonenumber' => 'phone_number',
+            'birthday' => 'birthday',
+        ];
+        foreach ($data as $key => $value) {
+            if (isset($fieldsMap[$key]) && trim($value) !== '') {
+                $updates[$fieldsMap[$key]] = $value;
+            }
         }
         if (empty($updates)) {
-            return ['success' => false, 'message' => '資料無異動'];
+            return ['success' => false, 'message' => '更新資料不得為空'];
         }
-        // 進來的資料其中之一為空 => 正常執行
-        $this->userModel->update($_SESSION['user_id'], $updates['nickname'] ?? null, $updates['phone_number'] ?? null);
-        return ['success' => true, 'message' => '資料更新成功'];
+
+        $result = $this->userModel->update($_SESSION['user_id'], $updates);
+        if($result['affected_rows'] > 0){
+            return ['success' => true, 'message' => '資料更新成功'];
+        }else{
+            return ['success' => false, 'message' => '資料未更動'];
+        }
     }
     // 重設密碼 => 需要先輸入原始密碼，以及要設置的新密碼 => 重設成功
     public function resetPassword($old_password, $new_password)
     {
-        if($old_password === $new_password){
+        if ($old_password === $new_password) {
             return ['success' => false, 'message' => '新密碼與舊密碼相同，重設失敗'];
         }
         //取得使用者資料

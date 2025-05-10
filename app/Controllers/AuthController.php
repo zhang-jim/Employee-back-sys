@@ -3,6 +3,10 @@
 namespace App\Controllers;
 
 use App\Controllers\Controller;
+use App\Requests\LoginRequest;
+use App\Requests\RegisterRequest;
+use App\Requests\ResetPasswordRequest;
+use App\Requests\UpdateUserInfoRequest;
 use App\Services\UserService;
 
 class AuthController extends Controller
@@ -31,29 +35,14 @@ class AuthController extends Controller
         // 取得前端JSON資料
         $input  = json_decode(file_get_contents('php://input'), true);
 
-        $email  = $input['email'] ?? null;
-        $password = $input['password'] ?? null;
-        $name = $input['name'] ?? null;
-        $nickname = $input['nickname'] ?? null;
-        $sex = $input['sex'] ?? null;  // 0 or 1
-        $birthday = $input['birthday'] ?? null;
-        $phonenumber = $input['phonenumber'] ?? null;
-        $onBoardDate = $input['onBoardDate'] ?? null;
-        $department = $input['department'] ?? null;
+        $errors = RegisterRequest::validate($input);
 
-        $data = [
-            'email' => $email,
-            'password' => $password,
-            'name' => $name,
-            'nickname' => $nickname,
-            'sex' => $sex,
-            'birthday' => $birthday,
-            'phonenumber' => $phonenumber,
-            'onBoardDate' => $onBoardDate,
-            'department' => $department
-        ];
+        if (!empty($errors)) {
+            $this->jsonResponse(false, $errors);
+        }
         // 使用UserServices 註冊邏輯
-        $user = $this->userService->register($data);
+        $user = $this->userService->register($input);
+
         if ($user['success']) {
             $_SESSION['user'] = $user['user']['name'];
             $_SESSION['user_id'] = $user['user']['id'];
@@ -73,14 +62,12 @@ class AuthController extends Controller
         }
         // 取得前端JSON資料
         $input  = json_decode(file_get_contents('php://input'), true);
-        $account = $input['account'] ?? null;
-        $password = $input['password'] ?? null;
-        // 資料驗證
-        if (!$account || !$password) {
-            $this->jsonResponse(false, '資料輸入不完整');
+        $errors = LoginRequest::validate($input);
+        if (!empty($errors)) {
+            $this->jsonResponse(false, $errors);
         }
         // 使用UserServices 判斷登入是否成功，並拋出例外 
-        $user = $this->userService->login($account, $password);
+        $user = $this->userService->login($input['account'], $input['password']);
         if ($user['success']) {
             $_SESSION['user'] = $user['user']['name'];
             $_SESSION['user_id'] = $user['user']['id'];
@@ -112,10 +99,13 @@ class AuthController extends Controller
     public function update()
     {
         $input = json_decode(file_get_contents('php://input'), true);
-        $new_nickname = $input['nickname'] ?? null;
-        $new_phone_number = $input['phone-number'] ?? null;
 
-        $result = $this->userService->updateinfo($new_nickname, $new_phone_number);
+        $errors = UpdateUserInfoRequest::validate($input);
+        if(!empty($errors)){
+            $this->jsonResponse(false, $errors);
+        }
+        
+        $result = $this->userService->updateinfo($input);
 
         if ($result['success']) {
             $this->jsonResponse(true, $result['message']);
@@ -127,25 +117,13 @@ class AuthController extends Controller
     public function resetPassword()
     {
         $input = json_decode(file_get_contents('php://input'), true);
-        $old_password = $input['password'] ?? null;
-        $new_password = $input['new-password'] ?? null;
-        // 驗證資料是否為空
-        if (empty($old_password) || empty($new_password)) {
-            $this->jsonResponse(false, "失敗，密碼不得為空");
-        }
-        // 驗證密碼：包含至少1個大寫,1個小寫,1個數字,1個符號,長度8~20字元,不得輸入中文。
-        if (strlen($new_password) < 8 || strlen($new_password) > 20) {
-            $this->jsonResponse(false, "密碼長度必須在8~20個字元之間");
-        }
-        if(!preg_match('/^[^\x{4e00}-\x{9fff}]+$/u',$new_password)){
-            $this->jsonResponse(false, '密碼不得包含中文');
-        }
-        if (!preg_match('/^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[!@#$%^&*])[\w!@#$%^&*]+$/', $new_password)) {
-            $this->jsonResponse(false, '密碼需包含大小寫字母、數字、特殊符號');
+        $errors = ResetPasswordRequest::validate($input);
+        if (!empty($errors)) {
+            $this->jsonResponse(false, $errors);
         }
 
-        $results = $this->userService->resetPassword($old_password, $new_password);
-        if ($results) {
+        $results = $this->userService->resetPassword($input['password'], $input['new-password']);
+        if ($results['success']) {
             session_destroy();
             $this->jsonResponse(true, $results['message']);
         } else {

@@ -34,7 +34,16 @@ class User
     // 查詢用戶資料
     public function getUser($userID)
     {
-        $stmt = $this->pdo->prepare("SELECT departments.name, users.name, users.nickname, users.phone_number, users.created_at FROM users JOIN departments ON users.department_id = departments.id WHERE users.id = ?");
+        $stmt = $this->pdo->prepare("SELECT 
+        departments.name,
+        user.email,
+        users.name,
+        users.nickname,
+        users.sex,
+        users.birthday,
+        users.phone_number,
+        users.created_at 
+        FROM users JOIN departments ON users.department_id = departments.id WHERE users.id = ?");
         $stmt->execute([$userID]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
@@ -53,10 +62,21 @@ class User
         $stmt->execute([$email, $password, $name, $nickname, $sex, $birthday, $phonenumber, $onBoardDate, $departmentId]);
     }
     // 編輯用戶資料
-    public function update($userID, $nickname = null, $phone_number = null)
+    public function update($userID, $data)
     {
-        $stmt = $this->pdo->prepare("UPDATE users SET nickname = ?, phone_number = ? WHERE id = ?");
-        $stmt->execute($nickname, $phone_number, $userID);
+        $conditions = [];
+        $params = [];
+        foreach ($data as $key => $value) {
+            $conditions[] = "$key = ?";
+            $params[] = $value;
+        };
+        $params[] = $userID;
+
+        $stmt = $this->pdo->prepare("UPDATE users SET " . implode(',', $conditions) . " WHERE id = ?");
+        $stmt->execute($params);
+        return [
+            'affected_rows' => $stmt->rowCount()
+        ];
     }
     // 重設密碼
     public function updatePassword($userID, $password)
