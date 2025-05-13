@@ -59,6 +59,14 @@ class Validator
         foreach ($rules as $field => $ruleset) {
             $value = $data[$field] ?? '';
 
+            // 檢查是否有 required 規則
+            $isRequired = in_array('required', $ruleset);
+
+            // 若非必填且值為空，直接略過該欄位所有驗證
+            if (!$isRequired && trim($value) === '') {
+                continue;
+            }
+
             foreach ($ruleset as $rule) {
                 // 若規則為陣列 callable 或匿名函式
                 if (is_array($rule) || $rule instanceof \Closure) {
