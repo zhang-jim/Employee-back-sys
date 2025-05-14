@@ -1,4 +1,5 @@
 <?php
+namespace Routes;
 class Router
 {
     private $routes = [
