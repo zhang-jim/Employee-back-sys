@@ -25,13 +25,21 @@ class User
 
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
+    // 登入
     public function getByAccount($account)
     {
         $stmt = $this->pdo->prepare("SELECT * FROM users WHERE email = :account OR phone_number = :account");
         $stmt->execute(['account' => $account]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
-    // 查詢用戶資料
+    // 查詢用戶Token, is_verified
+    public function getByToken($token)
+    {
+        $stmt = $this->pdo->prepare("SELECT id, is_verified FROM users WHERE token = ?");
+        $stmt->execute([$token]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+    // 查詢用戶開放資料
     public function getUser($userID)
     {
         $stmt = $this->pdo->prepare("SELECT 
@@ -54,26 +62,26 @@ class User
         $stmt->execute([$userID]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
-    public function create($email, $password, $name, $nickname, $sex, $birthday, $phonenumber, $onBoardDate, $departmentId)
+    public function create($data)
     {
+        $columns = array_keys($data);
+        $placeholders = array_fill(0, count($columns), '?');
+        $values = array_values($data);
+
         $stmt = $this->pdo->prepare(
-            "INSERT INTO users (email,password,name,nickname,sex,birthday,phone_number,on_board_date,department_id) VALUE (?,?,?,?,?,?,?,?,?)"
+            "INSERT INTO users (" . implode(",", $columns) . ") VALUE (" . implode(",", $placeholders) . ")"
         );
-        $stmt->execute([$email, $password, $name, $nickname, $sex, $birthday, $phonenumber, $onBoardDate, $departmentId]);
+        return $stmt->execute($values);
     }
     // 編輯用戶資料
     public function update($userID, $data)
     {
-        $conditions = [];
-        $params = [];
-        foreach ($data as $key => $value) {
-            $conditions[] = "$key = ?";
-            $params[] = $value;
-        };
-        $params[] = $userID;
+        $columns = array_keys($data);
+        $values = array_values($data);
+        $values[] = $userID;
 
-        $stmt = $this->pdo->prepare("UPDATE users SET " . implode(',', $conditions) . " WHERE id = ?");
-        $stmt->execute($params);
+        $stmt = $this->pdo->prepare("UPDATE users SET " . implode(',', $columns) . " WHERE id = ?");
+        $stmt->execute($values);
         return [
             'affected_rows' => $stmt->rowCount()
         ];
@@ -83,6 +91,12 @@ class User
     {
         $stmt = $this->pdo->prepare("UPDATE users SET password = ? WHERE id = ?");
         $stmt->execute([$password, $userID]);
+    }
+    // 更新Email驗證
+    public function updateEmailVerify($userID)
+    {
+        $stmt = $this->pdo->prepare("UPDATE users SET token = NULL, is_verified = 1 WHERE id = ?");
+        return $stmt->execute([$userID]);
     }
     public function delete($userID)
     {

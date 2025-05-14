@@ -26,6 +26,20 @@ class AuthController extends Controller
     {
         view('user/register');
     }
+    // 信箱驗證
+    public function verify()
+    {
+        $token = $_GET['token'] ?? null;
+        if (empty($token)) {
+            $this->jsonResponse(false, "Token不得為空");
+        }
+        $result = $this->userService->verifytoken($token);
+        if ($result['success']) {
+            $this->jsonResponse(true, $result['message']);
+        } else {
+            $this->jsonResponse(false, $result['message']);
+        }
+    }
     // 註冊
     public function store()
     {
@@ -42,13 +56,8 @@ class AuthController extends Controller
         }
         // 使用UserServices 註冊邏輯
         $user = $this->userService->register($input);
-
         if ($user['success']) {
-            $_SESSION['user'] = $user['user']['name'];
-            $_SESSION['user_id'] = $user['user']['id'];
-            $_SESSION['role_id'] = $user['user']['role_id'];
-            $_SESSION['logged_in'] = true;
-            $this->jsonResponse(true, "註冊成功！");
+            $this->jsonResponse(true, $user['message']);
         } else {
             $this->jsonResponse(false, $user['message']);
         }
@@ -101,10 +110,10 @@ class AuthController extends Controller
         $input = json_decode(file_get_contents('php://input'), true);
 
         $errors = UpdateUserInfoRequest::validate($input);
-        if(!empty($errors)){
+        if (!empty($errors)) {
             $this->jsonResponse(false, $errors);
         }
-        
+
         $result = $this->userService->updateinfo($input);
 
         if ($result['success']) {
